@@ -218,11 +218,12 @@ const uint8_t  char_space[4] PROGMEM = {
     0b00000000
 };
 
-const uint8_t  char_1[4] PROGMEM = {
-    3,
+const uint8_t  char_1[5] PROGMEM = {
+    4,
     0b1000010,
     0b1111111,
-    0b1000000
+    0b1000000,
+    0b0000000
 };
 
 const uint8_t  char_2[5] PROGMEM = {
@@ -237,7 +238,7 @@ const uint8_t  char_3[5] PROGMEM= {
     0b0100010,
     0b1001001,
     0b1001001,
-    0b0111110
+    0b0110110
 };
 const uint8_t  char_4[5] PROGMEM = {
     4,
@@ -430,6 +431,45 @@ const uint8_t *letter2char(const char letter){
         return char_9;
         break;
     default:
+        break;
+    }
+}
+
+const uint8_t *int2char(const char value){
+    switch (value)
+    {
+    case 0:
+        return char_0;
+        break;
+    case 1:
+        return char_1;
+        break;
+    case 2:
+        return char_2;
+        break;
+    case 3:
+        return char_3;
+        break;
+    case 4:
+        return char_4;
+        break;
+    case 5:
+        return char_5;
+        break;
+    case 6:
+        return char_6;
+        break;
+    case 7:
+        return char_7;
+        break;
+    case 8:
+        return char_8;
+        break;
+    case 9:
+        return char_9;
+        break;
+    default:
+        return char_E;
         break;
     }
 }

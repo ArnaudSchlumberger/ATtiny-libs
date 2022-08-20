@@ -1,6 +1,7 @@
 #include "ssd1306.h"
 #include <Arduino.h>
 #include <avr/pgmspace.h>
+#include <stdlib.h>
 
 #include "chars.h"
 
@@ -251,6 +252,24 @@ void SSD1306::writeUnsignedLong(const unsigned long data){
 
 }
 
+void SSD1306::writeRaw16Bits(const unsigned int data){
+    char data0 = (char)data;
+    char data1 = (char)(data>>8);
+
+    writeRawByte(data1);
+    writeRawByte(data0);
+}
+
+void SSD1306::writeRaw24Bits(const unsigned long data){
+    char data0 = (char)data;
+    char data1 = (char)(data>>8);
+    char data2 = (char)(data>>16);
+
+    writeRawByte(data2);
+    writeRawByte(data1);
+    writeRawByte(data0);
+}
+
 void SSD1306::writeRaw20Bits(const unsigned long data){
     char data0 = (char)data;
     char data1 = (char)(data>>8);
@@ -269,4 +288,24 @@ void SSD1306::writeRaw20Bits(const unsigned long data){
     
     writeRawByte(data1);
     writeRawByte(data0);
+}
+
+void SSD1306::writeInteger(const char length, const unsigned int value){
+    char * str = new char[length];
+
+    itoa(value, str, 10);
+    writeString(length, str);
+
+    delete [] str;
+}
+
+long int powerof(const int x, const int y){
+    long int result = x;
+    if(y == 0){
+        return 0 ;
+    }
+    for(int i = 0;i<y;i++){
+        result = result * x;
+    }
+    return result;
 }

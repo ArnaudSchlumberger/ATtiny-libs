@@ -34,6 +34,8 @@
 //Constant values
 #define RESET_VALUE 0xB6
 
+typedef long long signed int BMP280_S32_t;
+
 class bmp280
 {
 private:
@@ -47,6 +49,19 @@ private:
     //Measurements
     unsigned long adc_temp;
     unsigned long adc_press;
+
+    
+
+    BMP280_S32_t T;
+    
+    
+public:
+    bmp280(spi &spi0);
+    ~bmp280();
+
+    //debug
+    char *debug_list;
+    int list_length;
 
     //--Compensation words
     //Temperature
@@ -63,15 +78,6 @@ private:
     signed short dig_P7;
     signed short dig_P8;
     signed short dig_P9;
-    
-    
-public:
-    bmp280(spi &spi0);
-    ~bmp280();
-
-    //debug
-    char *debug_list;
-    int list_length;
 
     //reads and returns chip ID. Should return 0x58
     char readID(); //checked
@@ -131,7 +137,13 @@ public:
 
     unsigned long get_adc_temp();
     unsigned long get_adc_press();
+
+    void computeTemp();
+    BMP280_S32_t getTemp();
+    
 };
 
-unsigned long concat20bits(char msb, char lsb, char xlsb);
+unsigned long int concat20bits(char msb, char lsb, char xlsb);
+unsigned long int concat24bits(char msb, char lsb, char xlsb);
+
 #endif

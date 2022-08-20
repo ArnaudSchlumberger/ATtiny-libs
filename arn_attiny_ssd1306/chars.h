@@ -29,7 +29,7 @@ extern const uint8_t  char_X[5] PROGMEM;
 extern const uint8_t  char_Y[5] PROGMEM;
 extern const uint8_t  char_Z[5] PROGMEM;
 
-extern const uint8_t  char_1[4] PROGMEM;
+extern const uint8_t  char_1[5] PROGMEM;
 extern const uint8_t  char_2[5] PROGMEM;
 extern const uint8_t  char_3[5] PROGMEM;
 extern const uint8_t  char_4[5] PROGMEM;
@@ -48,4 +48,5 @@ extern const uint8_t  char_2dot[2] PROGMEM;
 extern const uint8_t  char_deg[4] PROGMEM;
 
 const uint8_t *letter2char(const char letter);
+const uint8_t *int2char(const char value);
 #endif

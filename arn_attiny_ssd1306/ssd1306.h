@@ -75,5 +75,17 @@ public:
     void writeUnsignedLong(const unsigned long data);
     //prints 20 bits without requiring the use of openWrite() and close() functions
     void writeRaw20Bits(const unsigned long data);
+    //prints 16 bits without requiring the use of openWrite() and close() functions
+    void writeRaw16Bits(const unsigned int data);
+    //prints 24 bits without requiring the use of openWrite() and close() functions
+    void writeRaw24Bits(const unsigned long data);
+
+    //prints integer. Max value : 65535. Requires openWrite() and close();
+    void writeInteger(const char length, const unsigned int value);
+
+
+
 };
+
+long int powerof(const int x, const int y);
 #endif

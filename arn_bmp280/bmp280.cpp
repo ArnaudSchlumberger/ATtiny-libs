@@ -71,8 +71,8 @@ void bmp280::burstReadMeasures(){
     char *list = new char[6];
     list = _spi.readRegister(REG_PRESS_MSB | (1<<7) , 6);
     
-    adc_press = ((unsigned long)list[0]<<12) | ((unsigned long)list[1]<<4) | ((unsigned long)(list[2]>>4));
-    adc_temp = ((unsigned long)list[3]<<12) | ((unsigned long)list[4]<<4) | ((unsigned long)(list[5]>>4));
+    adc_press = concat20bits(list[0], list[1], list[2]);
+    adc_temp = concat20bits(list[3], list[4], list[5]);
 
     delete [] list; 
     
@@ -84,7 +84,21 @@ void bmp280::burstReadMeasures(){
 
 void bmp280::readCompensationValues(){
     char *list = new char[24];
-    list = _spi.readRegister(REG_CALIB_00,24);
+    list = _spi.readRegister(REG_CALIB_00 | (1<<7) ,24);
+
+    dig_T1 = (((unsigned short int)list[1] & 0xff)<<8) | ((unsigned short int)list[0] & 0xff);
+    dig_T2 = (((signed short int)list[3] & 0xff)<<8) | ((signed short int)list[2] & 0xff);
+    dig_T3 = (((signed short int)list[5] & 0xff)<<8) | ((signed short int)list[4] & 0xff);
+
+    dig_P1 = (unsigned short int)list[6]<<8 | list[7];
+    dig_P2 = (signed short int)list[8]<<8 | list[9];
+    dig_P3 = (signed short int)list[10]<<8 | list[11];
+    dig_P4 = (signed short int)list[12]<<8 | list[13];
+    dig_P5 = (signed short int)list[14]<<8 | list[15];
+    dig_P6 = (signed short int)list[16]<<8 | list[17];
+    dig_P7 = (signed short int)list[18]<<8 | list[19];
+    dig_P8 = (signed short int)list[20]<<8 | list[21];
+    dig_P9 = (signed short int)list[22]<<8 | list[23];
 
     delete [] list;
 }
@@ -113,7 +127,30 @@ bmp280::~bmp280(){
     delete [] debug_list;
 }
 
-unsigned long concat20bits(char msb, char lsb, char xlsb){
-    // MSB[7-0]|LSB[7-0]|XLSB[7-4]
-    return (((unsigned long)msb)<<12) | (((unsigned long)lsb)<<4) | (((unsigned long)xlsb)>>4);
+unsigned long int concat24bits(char msb, char lsb, char xlsb){
+    // Data structure : MSB[7-0]|LSB[7-0]|XLSB[7-4]
+    /* unsigned long int msb_temp = (((unsigned long int)msb)&0x000000ff) << 16;
+    unsigned long int lsb_temp = (((unsigned long int)lsb)&0x000000ff) << 8;
+    return msb_temp | lsb_temp | xlsb; */
+    return ( ((unsigned long int)msb & 0xff)<<16) | (((unsigned long int)lsb & 0xff) << 8) | ((unsigned long int)xlsb & 0xff);
+}
+
+unsigned long int concat20bits(char msb, char lsb, char xlsb){
+    return ( ((unsigned long int)msb & 0xff)<<12) | (((unsigned long int)lsb & 0xff) << 4) | ((unsigned long int)xlsb & 0xff) >> 4;
+}
+
+void bmp280::computeTemp(){
+    BMP280_S32_t var1, var2, t_fine;
+
+    var1 = (((adc_temp >> 3) - ((BMP280_S32_t)dig_T1<<1)) * ((BMP280_S32_t)dig_T2)) >> 11;
+    var2 = (((((adc_temp >> 4) - ((BMP280_S32_t)dig_T1)) * ((adc_temp >> 4) - ((BMP280_S32_t)dig_T1))) >> 12) * ((BMP280_S32_t)dig_T3)) >> 14;
+    t_fine = var1 + var2;
+
+    T = (t_fine * 5 + 128) >> 8;
+
+    
+}
+
+BMP280_S32_t bmp280::getTemp(){
+    return T;
 }
