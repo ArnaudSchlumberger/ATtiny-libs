@@ -118,7 +118,7 @@ public:
 
     char receiveByte();
     char *readRegister(const char reg, const char NumberOfBytes);
-
+    void readRegister(const char reg, const char NumberOfBytes, char* outputBuffer);
 };
 
 void initSPIpins();

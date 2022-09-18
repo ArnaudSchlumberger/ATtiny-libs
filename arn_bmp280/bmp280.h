@@ -34,7 +34,9 @@
 //Constant values
 #define RESET_VALUE 0xB6
 
-typedef long long signed int BMP280_S32_t;
+typedef long signed int BMP280_S32_t;
+typedef long unsigned int BMP280_U32_t;
+typedef long long signed int BMP280_S64_t;
 
 class bmp280
 {
@@ -47,21 +49,10 @@ private:
     char status;
 
     //Measurements
-    unsigned long adc_temp;
-    unsigned long adc_press;
-
-    
-
-    BMP280_S32_t T;
-    
-    
-public:
-    bmp280(spi &spi0);
-    ~bmp280();
-
-    //debug
-    char *debug_list;
-    int list_length;
+    char* buffer; //24 bytes buffer for both compensation words and adc readings
+    char buffer_length;
+    signed long adc_temp; //last read Temperature ADC value
+    signed long adc_press; //last read Pressure ADC value
 
     //--Compensation words
     //Temperature
@@ -78,6 +69,19 @@ public:
     signed short dig_P7;
     signed short dig_P8;
     signed short dig_P9;
+
+    BMP280_S32_t T; //0.01°C step : 5984 reads 59.84°C
+    BMP280_S32_t P; 
+
+    BMP280_S32_t t_fine;
+    
+public:
+    bmp280(spi &spi0);
+    ~bmp280();
+
+    //debug
+    char *debug_list;
+    int list_length;
 
     //reads and returns chip ID. Should return 0x58
     char readID(); //checked
@@ -123,10 +127,6 @@ public:
     
     //Burst read of pressure and temperature registers
     void burstReadMeasures();
-    //Reads pressure registers -- DISCONTINUED
-    //void readPress();
-    //Reads temperature registers -- DISCONTINUED
-    //void readTemperature();
     //--END
 
     //--Compensation values
@@ -135,15 +135,26 @@ public:
     void readCompensationValues();
     //--END
 
+    //returns last stored Temperature ADC value
     unsigned long get_adc_temp();
+    //returns last stored Pressure ADC value
     unsigned long get_adc_press();
 
+    //calculates temperature using adc_temp and compensations values. Result is stored as T.
     void computeTemp();
+    //calculates pressure using adc_temp and compensations values. Result is stored as P.
+    char computePress();
+
+    //returns stored temperature value
     BMP280_S32_t getTemp();
+    //returns stored pressure value
+    BMP280_S32_t getPress();
     
 };
 
-unsigned long int concat20bits(char msb, char lsb, char xlsb);
-unsigned long int concat24bits(char msb, char lsb, char xlsb);
+//returns a 32bits word built by concanating 3 bytes. Word structure : 0x000|MSB|LSB|XLSB[7-4]|
+signed long int concat20bits(char msb, char lsb, char xlsb);
+//returns a 24bits word built by concanating 3 bytes. Word structure : 0x00|MSB|LSB|XLSB|
+signed long int concat24bits(char msb, char lsb, char xlsb);
 
 #endif

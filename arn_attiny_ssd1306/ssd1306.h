@@ -82,7 +82,8 @@ public:
 
     //prints integer. Max value : 65535. Requires openWrite() and close();
     void writeInteger(const char length, const unsigned int value);
-
+    //prints integer without requiring the use of openWrite() and close() functions
+    void printInteger(const char length, const unsigned int value);
 
 
 };

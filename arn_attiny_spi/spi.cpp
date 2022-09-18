@@ -14,6 +14,8 @@ spi::spi(const char master, const char doubling, const char prescaler, const cha
     //enabling SPI peripheral
     _enabled = 1;
     SPI0_CTRLA |= (1<<SPI0_CTRLA_ENABLE_BP);
+
+
 }
 
 spi::~spi(){
@@ -170,6 +172,28 @@ char* spi::readRegister(const char reg, const char NumberOfBytes){
     }
     clrCS();
     return array;
+}
+
+void spi::readRegister(const char reg, const char NumberOfBytes, char* outputBuffer){
+    if(NumberOfBytes == 0){
+        return 0xFF;
+    }
+
+    setCS();
+    SPI0.DATA = reg;
+    while(SPI0.INTFLAGS != 0b10000000){
+
+    }
+    for(int i = 0;i<NumberOfBytes;i++){
+
+        SPI0.DATA = 0x00;
+        while(SPI0.INTFLAGS != 0b10000000){
+
+        }
+        outputBuffer[i] = SPI0.DATA;
+
+    }
+    clrCS();
 }
 
 void initSPIpins(){

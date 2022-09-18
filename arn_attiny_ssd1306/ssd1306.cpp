@@ -299,6 +299,12 @@ void SSD1306::writeInteger(const char length, const unsigned int value){
     delete [] str;
 }
 
+void SSD1306::printInteger(const char length, const unsigned int value){
+    openWrite();
+    writeInteger(length, value);
+    close();
+}
+
 long int powerof(const int x, const int y){
     long int result = x;
     if(y == 0){
